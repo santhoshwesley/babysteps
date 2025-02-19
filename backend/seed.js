@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Doctor from "./models/Doctor.js";
 
-dotenv.config(); // Load .env variables
+dotenv.config();
 
 mongoose
   .connect(process.env.MONGO_URI, {

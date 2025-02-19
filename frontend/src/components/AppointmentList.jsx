@@ -6,11 +6,15 @@ import {
   ListItemText,
   CircularProgress,
   Container,
+  Button,
+  Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const AppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getAppointments()
@@ -25,15 +29,25 @@ const AppointmentList = () => {
 
   return (
     <Container>
+      <Typography variant="h4" gutterBottom>
+        Appointments
+      </Typography>
       <List>
         {appointments.map((apt) => (
           <ListItem key={apt._id}>
             <ListItemText
-              primary={`${apt.patientName} - ${apt.appointmentType} on ${apt.date}`}
+              primary={`${apt.patientName} - ${apt.appointmentType} on ${apt.date} at ${apt.time}`}
             />
           </ListItem>
         ))}
       </List>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => navigate("/")}
+      >
+        Back to Home
+      </Button>
     </Container>
   );
 };

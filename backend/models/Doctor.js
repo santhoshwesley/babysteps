@@ -7,7 +7,7 @@ const doctorSchema = new mongoose.Schema({
     start: String,
     end: String,
   },
-  availableSlots: [String],
+  availableSlots: { type: [String], default: [] },
 });
 
 export default mongoose.model("Doctor", doctorSchema);
