@@ -1,77 +1,111 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
-  TextField,
+  DialogActions,
   Button,
+  TextField,
   MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
-import { bookAppointment } from "../api/api";
+import API_URL from "../api/api";
+import "../styles.css";
 
-const BookingForm = ({ open, handleClose, doctorId, selectedSlot }) => {
+const BookingForm = ({
+  open,
+  handleClose,
+  doctorId,
+  selectedSlot,
+  selectedDate,
+}) => {
   const [patientName, setPatientName] = useState("");
-  const [appointmentType, setAppointmentType] = useState("General"); 
+  const [appointmentType, setAppointmentType] = useState("General");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = async () => {
+  const handleBooking = async () => {
     if (!patientName) {
-      alert("Please enter your name!");
+      alert("Please enter your name");
       return;
     }
 
-    if (!["General", "Urgent"].includes(appointmentType)) {
-      alert("Invalid appointment type!"); 
-      return;
-    }
+    setLoading(true);
 
     try {
-      await bookAppointment({
+      await axios.post(`${API_URL}/appointments/book`, {
         doctorId,
-        date: new Date().toISOString().split("T")[0],  Ensure date format
-        time: selectedSlot, 
+        patientName,
+        date: selectedDate,
+        slot: selectedSlot,
         duration: 30,
         appointmentType,
-        patientName,
       });
-      alert("Appointment booked!");
+
+      alert("Appointment booked successfully!");
       handleClose();
+      navigate("/appointments");
     } catch (error) {
-      console.error("Booking failed", error.response?.data || error);
-      alert("Failed to book appointment. Please try again.");
+      console.error("Error booking appointment:", error);
+      alert(error.response?.data?.error || "Failed to book appointment");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose} fullWidth>
       <DialogTitle>Book Appointment</DialogTitle>
       <DialogContent>
         <TextField
-          fullWidth
           label="Patient Name"
+          fullWidth
           value={patientName}
           onChange={(e) => setPatientName(e.target.value)}
           margin="dense"
         />
+        <FormControl fullWidth margin="dense">
+          <InputLabel>Appointment Type</InputLabel>
+          <Select
+            value={appointmentType}
+            onChange={(e) => setAppointmentType(e.target.value)}
+          >
+            <MenuItem value="General">General</MenuItem>
+            <MenuItem value="Urgent">Urgent</MenuItem>
+          </Select>
+        </FormControl>
         <TextField
+          label="Selected Date"
           fullWidth
-          select
-          label="Appointment Type"
-          value={appointmentType}
-          onChange={(e) => setAppointmentType(e.target.value)}
+          value={selectedDate}
+          disabled
           margin="dense"
-        >
-          <MenuItem value="General">General</MenuItem>
-          <MenuItem value="Urgent">Urgent</MenuItem>
-        </TextField>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          color="primary"
-          style={{ marginTop: "10px" }}
-        >
-          Confirm Booking
-        </Button>
+        />
+        <TextField
+          label="Selected Slot"
+          fullWidth
+          value={selectedSlot}
+          disabled
+          margin="dense"
+        />
       </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="secondary">
+          Cancel
+        </Button>
+        <Button
+          onClick={handleBooking}
+          color="primary"
+          variant="contained"
+          disabled={loading}
+        >
+          {loading ? "Booking..." : "Confirm Booking"}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

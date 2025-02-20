@@ -1,21 +1,27 @@
+import { ThemeProvider, CssBaseline, Container } from "@mui/material";
+import theme from "./theme";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
 import DoctorDetails from "./pages/DoctorDetails";
 import AppointmentList from "./components/AppointmentList";
-import Home from "./pages/Home";
-import { Container } from "@mui/material";
+import DoctorsList from "./components/DoctorList";
 
-function App() {
+const App = () => {
   return (
-    <Router>
-      <Container>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/doctor/:id" element={<DoctorDetails />} />
-          <Route path="/appointments" element={<AppointmentList />} />
-        </Routes>
-      </Container>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <Container>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/doctors" element={<DoctorsList />} />
+            <Route path="/doctor/:id" element={<DoctorDetails />} />
+            <Route path="/appointments" element={<AppointmentList />} />
+          </Routes>
+        </Container>
+      </Router>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
