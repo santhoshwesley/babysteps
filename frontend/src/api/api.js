@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://babysteps-gi7r.onrender.com";
 export default API_URL;
 
 export const getDoctors = () => axios.get(`${API_URL}/doctors`);
